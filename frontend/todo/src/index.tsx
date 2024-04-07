@@ -3,41 +3,6 @@ import { useState, StrictMode, useEffect } from "react";
 import { createRoot } from 'react-dom/client';
 import "./index.css";
 
-
-const initialTodos: Todo[] = [
-  {
-    value: 'TODO #5',
-    id: 4,
-    checked: false,
-    removed: false,
-  },
-  {
-    value: 'TODO #4',
-    id: 3,
-    checked: true,
-    removed: false,
-  },
-  {
-    value: 'TODO #3',
-    id: 2,
-    checked: false,
-    removed: true,
-  },
-  {
-    value: 'TODO #2',
-    id: 1,
-    checked: true,
-    removed: true,
-  },
-  {
-    value: 'TODO #1',
-    id: 0,
-    checked: false,
-    removed: false,
-  },
-];
-// =====================================
-
 type Todo = {
   value: string;
   readonly id: number;
@@ -47,8 +12,11 @@ type Todo = {
 
 type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
 
+const BASE_URL = 'http://143.198.196.60';
+
 export const App = () => {
 
+  const [error, setError] = useState();
   const [text, setText] = useState(() => {
     const storedText = localStorage.getItem('text');
     return storedText ? JSON.parse(storedText) : '';
@@ -58,14 +26,20 @@ export const App = () => {
     localStorage.setItem('text', JSON.stringify(text));
   }, [text]);
 
-  const [todos, setTodos] = useState<Todo[]>(() => {;
-    const storedTodos = localStorage.getItem('todos');
-    return storedTodos ? JSON.parse(storedTodos) : initialTodos;
-  });
-  
+  const [todos, setTodos] = useState<Todo[]>([]);
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
+    const fetchTodo = async () => {
+      try{
+        const response = await fetch(`${BASE_URL}/api/tasks`);
+        const fetchedTodo = (await response.json()) as Todo[];
+        console.log(fetchedTodo);
+        setTodos(fetchedTodo);
+      } catch (e: any) {
+        setError(e);
+      }
+    }
+    fetchTodo();
+  },[]);
 
   const [filter, setFilter] = useState<Filter>(() => {
     const storedFilter = localStorage.getItem('filter');
@@ -135,6 +109,10 @@ export const App = () => {
     }
   });
 
+  if (error) {
+    return <div>Something went wrong. Please try again.</div>
+  }
+  
   return (
     <div>
       <select
