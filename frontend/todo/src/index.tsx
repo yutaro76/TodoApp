@@ -12,7 +12,7 @@ type Todo = {
 
 type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
 
-const BASE_URL = 'http://143.198.196.60';
+const BASE_URL = 'http://127.0.0.1:8000';
 
 export const App = () => {
 
@@ -32,7 +32,6 @@ export const App = () => {
       try{
         const response = await fetch(`${BASE_URL}/api/tasks`);
         const fetchedTodo = (await response.json()) as Todo[];
-        console.log(fetchedTodo);
         setTodos(fetchedTodo);
       } catch (e: any) {
         setError(e);
@@ -112,7 +111,6 @@ export const App = () => {
   if (error) {
     return <div>Something went wrong. Please try again.</div>
   }
-  
   return (
     <div>
       <select

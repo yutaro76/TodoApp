@@ -5,4 +5,4 @@ from django.contrib.auth.models import User
 class TaskSerializer(serializers.ModelSerializer):
   class Meta:
     model = Task
-    fields = ('id', 'title', 'deleted', 'completed')
+    fields = ('id', 'value', 'checked', 'removed')

@@ -9,12 +9,12 @@ class TaskViewSet(viewsets.ModelViewSet):
 
   def get_queryset(self):
     queryset = Task.objects.all()
-    deleted = self.request.query_params.get('deleted', None)
-    completed = self.request.query_params.get('completed', None)
+    removed = self.request.query_params.get('removed', None)
+    checked = self.request.query_params.get('checked', None)
 
-    if deleted is not None:
-        queryset = queryset.filter(deleted=deleted.lower() == 'true')
-    if completed is not None:
-        queryset = queryset.filter(completed=completed.lower() == 'true')
+    if removed is not None:
+        queryset = queryset.filter(removed=removed.lower() == 'true')
+    if checked is not None:
+        queryset = queryset.filter(checked=checked.lower() == 'true')
 
     return queryset
