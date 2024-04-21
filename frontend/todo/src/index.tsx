@@ -17,19 +17,21 @@ const BASE_URL = 'http://127.0.0.1:8000';
 export const App = () => {
 
   const [error, setError] = useState();
-  const [text, setText] = useState(() => {
-    const storedText = localStorage.getItem('text');
-    return storedText ? JSON.parse(storedText) : '';
-  });
+  // const [text, setText] = useState(() => {
+  //   const storedText = localStorage.getItem('text');
+  //   return storedText ? JSON.parse(storedText) : '';
+  // });
   
-  useEffect(() => {
-    localStorage.setItem('text', JSON.stringify(text));
-  }, [text]);
+  // useEffect(() => {
+  //   localStorage.setItem('text', JSON.stringify(text));
+  // }, [text]);
+
+  const [text, setText] = useState('');
 
   const [todos, setTodos] = useState<Todo[]>([]);
   useEffect(() => {
     const fetchTodo = async () => {
-      try{
+      try {
         const response = await fetch(`${BASE_URL}/api/tasks`);
         const fetchedTodo = (await response.json()) as Todo[];
         setTodos(fetchedTodo);
@@ -49,9 +51,45 @@ export const App = () => {
     localStorage.setItem('filter', JSON.stringify(filter));
   }, [filter]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const newValue = e.target.value;
+
+    const updateText = async (id: number, newText: string) => {
+      try {
+        await fetch(`${BASE_URL}/api/tasks/${id}/`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ value: newText })
+        });
+      } catch (e: any) {
+          setError(e);
+      }
+    }
+    updateText(id, newValue)
+
+    const updateTodo = async () => {
+      try {
+        setTodos((todos) =>
+          todos.map((todo) => {
+            if (todo.id === id) {
+              return { ...todo, value: newValue };
+            } else {
+              return todo;
+            }
+          })
+        );
+      } catch (e: any) {
+        setError(e);
+      }
+    }
+    updateTodo();
+  }
 
   const handleSubmit = () => {
     if (!text) return;
@@ -137,7 +175,7 @@ export const App = () => {
               handleSubmit();
             }}
           >
-            <input type="text" value={text} onChange={(e) => handleChange(e)} />
+            <input type="text" value={text} onChange={(e) => handleTitle(e)} />
             <input type="submit" value="追加" onSubmit={handleSubmit} />
           </form>
         )
@@ -156,7 +194,7 @@ export const App = () => {
                 type="text"
                 disabled={todo.checked || todo.removed}
                 value={todo.value}
-                onChange={(e) => handleTodo(todo.id, 'value', e.target.value)}
+                onChange={(e) => handleChange(e, todo.id)}
               />
               <button onClick={() => handleTodo(todo.id, 'removed', !todo.removed)}>
                 {todo.removed ? '復元' : '削除'}
