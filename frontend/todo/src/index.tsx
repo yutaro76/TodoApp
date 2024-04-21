@@ -17,14 +17,6 @@ const BASE_URL = 'http://127.0.0.1:8000';
 export const App = () => {
 
   const [error, setError] = useState();
-  // const [text, setText] = useState(() => {
-  //   const storedText = localStorage.getItem('text');
-  //   return storedText ? JSON.parse(storedText) : '';
-  // });
-  
-  // useEffect(() => {
-  //   localStorage.setItem('text', JSON.stringify(text));
-  // }, [text]);
 
   const [text, setText] = useState('');
 
@@ -32,7 +24,7 @@ export const App = () => {
   useEffect(() => {
     const fetchTodo = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/tasks`);
+        const response = await fetch(`${BASE_URL}/api/tasks/`);
         const fetchedTodo = (await response.json()) as Todo[];
         setTodos(fetchedTodo);
       } catch (e: any) {
@@ -91,7 +83,7 @@ export const App = () => {
     updateTodo();
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!text) return;
 
     const newTodo: Todo = {
@@ -101,8 +93,25 @@ export const App = () => {
       removed: false,
     };
 
-    setTodos((todos) => [newTodo, ...todos]);
-    setText('');
+    try {
+      const response = await fetch(`${BASE_URL}/api/tasks/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newTodo)
+      });
+
+      if(!response.ok) {
+        throw new Error('Failed to add todo');
+      }
+
+      const createdTodo = await response.json();
+      setTodos((todos) => [createdTodo, ...todos]);
+      setText('');
+    } catch (e: any) {
+      setError(e);
+    }
   };
   
   const handleTodo = <K extends keyof Todo, V extends Todo[K]>(
