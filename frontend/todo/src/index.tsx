@@ -12,7 +12,7 @@ type Todo = {
 
 type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
 
-const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'http://143.198.196.60';
 
 export const App = () => {
 
