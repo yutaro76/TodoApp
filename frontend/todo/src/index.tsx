@@ -113,19 +113,27 @@ export const App = () => {
       setError(e);
     }
   };
-  
-  const handleTodo = <K extends keyof Todo, V extends Todo[K]>(
-    id: number,
-    key: K,
-    value: V
-  ) => {
+
+  const handleCheck = (id: number, checked: boolean) => {
     setTodos((todos) => {
       const newTodos = todos.map((todo) => {
         if (todo.id === id) {
-          return { ...todo, [key]: value };
-        } else {
-          return todo;
+          return { ...todo, checked };
         }
+        return todo;
+      });
+
+      return newTodos;
+    });
+  };
+
+  const handleRemove = (id: number, removed: boolean) => {
+    setTodos((todos) => {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, removed };
+        }
+        return todo;
       });
 
       return newTodos;
@@ -197,7 +205,7 @@ export const App = () => {
                 type="checkbox"
                 disabled={todo.removed}
                 checked={todo.checked}
-                onChange={() => handleTodo(todo.id, 'checked', !todo.checked)}
+                onChange={() => handleCheck(todo.id, !todo.checked)}
               />
               <input
                 type="text"
@@ -205,7 +213,7 @@ export const App = () => {
                 value={todo.value}
                 onChange={(e) => handleChange(e, todo.id)}
               />
-              <button onClick={() => handleTodo(todo.id, 'removed', !todo.removed)}>
+              <button onClick={() => handleRemove(todo.id, !todo.removed)}>
                 {todo.removed ? '復元' : '削除'}
               </button>
             </li>
