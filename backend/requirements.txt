@@ -1,0 +1,10 @@
+django
+psycopg2-binary
+djangorestframework
+flake8
+autopep8
+isort
+unimport
+requests
+beautifulsoup4
+django-cors-headers
