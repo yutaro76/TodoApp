@@ -12,7 +12,7 @@ type Todo = {
 
 type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
 
-const BASE_URL = 'http://143.198.196.60';
+const BASE_URL = 'https://okudayutaro.xyz';
 
 export const App = () => {
 
@@ -115,6 +115,21 @@ export const App = () => {
   };
 
   const handleCheck = (id: number, checked: boolean) => {
+  
+    const todoCheck = todos.find(todo => todo.id === id);
+    const todoValueCheck = todoCheck ? todoCheck.value : null;
+
+    const options = {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ value: todoValueCheck, checked: checked })
+    };
+
+    fetch(`${BASE_URL}/api/tasks/${id}/`, options)
+      .then(response => response.json())
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
+    
     setTodos((todos) => {
       const newTodos = todos.map((todo) => {
         if (todo.id === id) {
@@ -128,6 +143,21 @@ export const App = () => {
   };
 
   const handleRemove = (id: number, removed: boolean) => {
+
+    const todoRemove = todos.find(todo => todo.id === id);
+    const todoValueRemove = todoRemove ? todoRemove.value : null;
+
+    const options = {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ value: todoValueRemove, removed: removed })
+    };
+
+    fetch(`${BASE_URL}/api/tasks/${id}/`, options)
+      .then(response => response.json())
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
+
     setTodos((todos) => {
       const newTodos = todos.map((todo) => {
         if (todo.id === id) {
